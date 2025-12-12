@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Broken Script — Null vs Fountain</title>
+<style>
+:root{--bg:#06060a;--accent:#00f6ff;--danger:#ff2d55;--light:#ffffff;--glass: rgba(255,255,255,0.06);} *{box-sizing:border-box} html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;overflow:hidden} body{background: radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.7) 50%, #000000 100%), var(--bg); color:var(--light)} .app{display:grid;grid-template-columns:360px 1fr; gap:24px; height:100vh; padding:28px} .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:18px; box-shadow:0 6px 24px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03)} header{display:flex;align-items:center;gap:12px} header h1{font-size:18px;margin:0} header p{margin:0;font-size:12px;opacity:0.8} .controls{margin-top:12px;display:flex;flex-direction:column;gap:10px} .btn{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--light);cursor:pointer} .btn:active{transform:translateY(1px)} .btn.primary{background:linear-gradient(90deg,var(--accent),#7fffeb);color:#001} .state-box{margin-top:12px;padding:12px;border-radius:10px;background:var(--glass);font-family:monospace;font-size:13px} .preview{position:relative;overflow:hidden;border-radius:14px} .canvas-area{position:relative;height:100%;min-height:100vh} .glitch{position:relative;font-family:monospace;font-weight:700;letter-spacing:0.6px} .glitch::before, .glitch::after{content:attr(data-text);position:absolute;left:0;top:0;mix-blend-mode:screen;opacity:0.8} .glitch::before{color:#ff6b6b;transform:translate(2px,-2px);clip-path:rect(0,900px,40px,0);animation:glitch-1 2.5s infinite} .glitch::after{color:#9be7ff;transform:translate(-2px,2px);clip-path:rect(80px,900px,140px,0);animation:glitch-2 3s infinite} @keyframes glitch-1{0%{transform:translate(2px,-2px)}20%{transform:translate(-3px,1px)}40%{transform:translate(2px,0)}60%{transform:translate(0,-1px)}100%{transform:translate(2px,-2px)}} @keyframes glitch-2{0%{transform:translate(-2px,2px)}30%{transform:translate(1px,-1px)}60%{transform:translate(-1px,2px)}100%{transform:translate(-2px,2px)}} .nulled{filter:grayscale(1) blur(2px) contrast(0.6); opacity:0; transform:scale(0.98); transition: all 600ms cubic-bezier(.2,.9,.3,1)} .particles{position:absolute;inset:0;pointer-events:none} .particle{position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.95);opacity:0.9; will-change:transform,opacity} .log{margin-top:12px;height:160px;overflow:auto;background:rgba(0,0,0,0.4);padding:10px;border-radius:8px;font-family:monospace;font-size:12px} footer{position:absolute;left:20px;bottom:20px;font-size:12px;opacity:0.8} @media (max-width:900px){.app{grid-template-columns:1fr; padding:12px}.panel{order:2}} .menu{position:absolute;top:18px;right:18px;background:rgba(0,0,0,0.5);padding:10px;border-radius:12px;display:flex;flex-direction:column;gap:6px;z-index:100} .menu button{padding:6px 10px;border-radius:8px;border:none;background:linear-gradient(90deg,#00f6ff,#7fffeb);cursor:pointer;color:#001;font-weight:700;font-size:12px}.menu button:active{transform:translateY(1px)}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="panel">
+<header><div><h1>Broken Script</h1><p>Simulateur — {null} ↔ {root} ↔ &lt;1&gt;</p></div></header>
+<div class="controls">
+<div>
+<button id="btn-null" class="btn">Activer {null}</button>
+<button id="btn-root" class="btn primary">Activer {root}</button>
+</div>
+<div class="state-box">État actuel : <span id="state">{root}</span></div>
+<div style="display:flex;gap:8px">
+<button id="glitch-btn" class="btn">Lancer glitch</button>
+<button id="reset-btn" class="btn">Réinitialiser</button>
+</div>
+<div class="log" id="log">/* log du script */<br></div>
+</div>
+<div style="margin-top:14px;font-size:12px;opacity:0.9">
+<strong>Notes :</strong>
+<ul>
+<li>{null} corrompt le DOM — éléments se vidangent.</li>
+<li>{root} émet : particles, texte lumineux.</li>
+<li>Clic droit = &lt;1&gt; Fontaine Blanche.</li>
+<li>Mode NULL OVERFLOW = tout se déforme.</li>
+</ul>
+</div>
+</aside>
+<main class="panel preview">
+<div class="canvas-area" id="canvas">
+<div id="singularity" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;height:420px;border-radius:50%;background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.02), rgba(0,0,0,1) 60%);box-shadow:0 0 120px 30px rgba(0,0,0,0.7), inset 0 0 40px rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;">
+<div id="sig-text" class="glitch" data-text="{root}" style="font-size:36px;color:rgba(255,255,255,0.9)">{root}</div>
+</div>
+<div id="content" style="position:absolute;inset:18px;padding:28px;pointer-events:auto">
+<h2 style="margin-top:0">Le Script</h2>
+<p id="para">Ceci est une page expérimentale. Le Script peut être corrompu — appuie sur <strong>{null}</strong> pour observer.</p>
+<div style="display:flex;gap:10px;margin-top:18px">
+<div class="card absorbable" style="padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));width:240px">
+<h3>Module A</h3><p>Contenu du module A. Il peut être aspiré vers {null}.</p>
+</div>
+<div class="card absorbable" style="padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));width:240px">
+<h3>Module B</h3><p>Contenu du module B. Testez la corruption sur ce bloc.</p>
+</div>
+</div>
+<div style="margin-top:22px">
+<pre style="background:rgba(0,0,0,0.5);padding:14px;border-radius:8px;font-family:monospace">{script}
+  line 1: init
+  line 2: spawn root
+  line 3: // ...
+</pre>
+</div>
+</div>
+<div class="particles" id="particles"></div>
+<div class="menu">
+<button id="menu-null">{null}</button>
+<button id="menu-root">{root}</button>
+<button id="menu-fountain">&lt;1&gt;</button>
+<button id="menu-overflow">NULL OVERFLOW</button>
+</div>
+<footer>Broken Script — Simulation</footer>
+</div>
+</main>
+</div>
+<!-- Console Broken Script / JavaScript Control Panel -->
+<div id="bs-console" style="position:fixed; bottom:10px; right:10px; padding:12px; background:#000000cc; color:#0aff0a; font-family:monospace; font-size:14px; border:1px solid #0aff0a; border-radius:8px; width:260px; z-index:9999;">
+  <div><b>Broken Script Console</b></div>
+  <textarea id="bs-input" style="width:100%; height:80px; background:#111; color:#0aff0a; border:1px solid #0aff0a; margin-top:8px;"></textarea>
+  <button id="bs-run" style="margin-top:8px; width:100%; background:#0aff0a; color:#000; padding:4px; cursor:pointer;">Exécuter</button>
+  <div id="bs-output" style="margin-top:8px; max-height:80px; overflow:auto; background:#050; padding:4px;"></div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+const stateEl=document.getElementById('state'),log=document.getElementById('log'),btnNull=document.getElementById('btn-null'),btnRoot=document.getElementById('btn-root'),btnGlitch=document.getElementById('glitch-btn'),btnReset=document.getElementById('reset-btn'),content=document.getElementById('content'),sigText=document.getElementById('sig-text'),particles=document.getElementById('particles');
+let current='{root}',particleInterval=null,overflowInterval=null;
+function writeLog(txt){log.innerHTML+=txt+'<br>';log.scrollTop=log.scrollHeight;}
+function enterNull(){if(current==='{null}')return;current='{null}';stateEl.textContent=current;writeLog('État → {null} : corruption en cours...');document.querySelectorAll('.card, p, pre, h2, h3').forEach((el,i)=>{setTimeout(()=>{el.classList.add('nulled');},i*160);});sigText.textContent='{null}';sigText.setAttribute('data-text','{null}');document.body.style.background='#000';stopParticles();}
+function enterRoot(){if(current==='{root}')return;current='{root}';stateEl.textContent=current;writeLog('État → {root} : emission active');document.querySelectorAll('.nulled').forEach(el=>el.classList.remove('nulled'));sigText.textContent='{root}';sigText.setAttribute('data-text','{root}');document.body.style.background='radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.7) 50%, #000000 100%), var(--bg)';startParticles();stopOverflow();}
+function glitch(){writeLog('-- glitch initiated --');const t=document.createElement('div');t.className='glitch';t.dataset.text='ERROR';t.textContent='ERROR';t.style.position='absolute';t.style.left=(20+Math.random()*60)+'%';t.style.top=(20+Math.random()*60)+'%';t.style.fontSize='28px';t.style.pointerEvents='none';document.getElementById('canvas').appendChild(t);setTimeout(()=>t.remove(),2000+Math.random()*1000);}
+function startParticles(){stopParticles();particleInterval=setInterval(()=>{for(let i=0;i<6;i++)spawnParticle();},180);}
+function stopParticles(){clearInterval(particleInterval);particleInterval=null;document.querySelectorAll('.particle').forEach(p=>p.remove());}
+function spawnParticle(){const p=document.createElement('div');p.className='particle';const x=window.innerWidth*(0.3+Math.random()*0.4),y=window.innerHeight*(0.4+Math.random()*0.25);p.style.left=(x+(Math.random()-0.5)*50)+'px';p.style.top=(y+(Math.random()-0.5)*50)+'px';const scale=0.5+Math.random()*1.6;p.style.transform=`scale(${scale})`;particles.appendChild(p);const dx=(Math.random()-0.5)*800,dy=-(300+Math.random()*800),rot=(Math.random()-0.5)*360;p.animate([{transform:`translate(0,0) scale(${scale}) rotate(0deg)`,opacity:1},{transform:`translate(${dx}px, ${dy}px) scale(${scale*0.1}) rotate(${rot}deg)`,opacity:0}],{duration:2600+Math.random()*1500,easing:'cubic-bezier(.2,.9,.3,1)'}).onfinish=()=>p.remove();}
+function absorbEffect(target){target.style.transition='transform 0.6s ease-in, opacity 0.6s ease-in';target.style.transform='scale(0) rotate(25deg)';target.style.opacity='0';setTimeout(()=>target.remove(),600);}
+document.querySelectorAll('.absorbable').forEach(el=>{el.addEventListener('click',()=>absorbEffect(el));});
+function whiteFountain(x,y){const dot=document.createElement('div');dot.style.position='fixed';dot.style.left=x+'px';dot.style.top=y+'px';dot.style.width='8px';dot.style.height='8px';dot.style.borderRadius='50%';dot.style.background='#ffffff';dot.style.opacity='1';dot.style.transform='scale(1)';dot.style.transition='transform 0.8s ease-out, opacity 1s ease-out';document.body.appendChild(dot);requestAnimationFrame(()=>{dot.style.transform='scale(35)';dot.style.opacity='0';});setTimeout(()=>dot.remove(),1000);}
+function startOverflow(){stopOverflow();overflowInterval=setInterval(()=>{document.body.style.transform=`rotate(${Math.random()*6-3}deg) skew(${Math.random()*4-2}deg,${Math.random()*4-2}deg)`;},80);}
+function stopOverflow(){clearInterval(overflowInterval);document.body.style.transform='rotate(0deg) skew(0deg,0deg)';}
+window.addEventListener('contextmenu',e=>{e.preventDefault();whiteFountain(e.clientX,e.clientY);});
+document.getElementById('menu-null').addEventListener('click',enterNull);
+document.getElementById('menu-root').addEventListener('click',enterRoot);
+document.getElementById('menu-fountain').addEventListener('click',e=>whiteFountain(window.innerWidth/2,window.innerHeight/2));
+document.getElementById('menu-overflow').addEventListener('click',()=>{enterNull();startOverflow();writeLog('Mode NULL OVERFLOW activé');});
+btnNull.addEventListener('click',enterNull);
+btnRoot.addEventListener('click',enterRoot);
+btnGlitch.addEventListener('click',glitch);
+btnReset.addEventListener('click',()=>{document.querySelectorAll('.nulled').forEach(el=>el.classList.remove('nulled'));sigText.textContent='{root}';stateEl.textContent='{root}';document.body.style.background='radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.7) 50%, #000000 100%), var(--bg)';startParticles();stopOverflow();writeLog('Réinitialisation complète');});
+enterRoot();
+writeLog('Boot : {root} initialisé');
+
+// --- Ajout de vraies utilités à la console ---
+function bsListElements(){return [...document.querySelectorAll('*')].map(el=>el.tagName.toLowerCase());}
+function bsCount(tag){return document.querySelectorAll(tag).length;}
+function bsHighlight(selector){const els=document.querySelectorAll(selector);els.forEach(el=>{el.style.outline='2px solid #0aff0a';setTimeout(()=>el.style.outline='none',1500);});return els.length+' élément(s) surlignés.';}
+function bsDelete(selector){const els=document.querySelectorAll(selector);els.forEach(el=>el.remove());return els.length+' élément(s) supprimés.';}
+function bsInjectHTML(html){const box=document.createElement('div');box.innerHTML=html;document.body.appendChild(box);return 'HTML injecté';}
+
+// Integration avec la console
+const bsOutput=document.getElementById('bs-output');
+bsOutput.innerHTML += `<div>Utilitaires chargés : bsListElements(), bsCount(tag
