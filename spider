@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Spider Ultra-Fluide Continu</title>
+<style>
+  html,body{margin:0;overflow:hidden;background:#000}
+  canvas{display:block}
+</style>
+</head>
+<body>
+<canvas></canvas>
+<script>
+const c = document.querySelector("canvas")
+const ctx = c.getContext("2d")
+let w,h
+const resize=()=>{w=c.width=innerWidth; h=c.height=innerHeight}
+addEventListener("resize",resize)
+resize()
+
+// utils
+const rnd=(a,b)=>a+Math.random()*(b-a)
+const lerp=(a,b,t)=>a+(b-a)*t
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y)
+const many=(n,f)=>[...Array(n)].map((_,i)=>f(i))
+
+// ---------------- mouse ----------------
+let mouse={x:w/2,y:h/2}
+addEventListener("pointermove",e=>mouse={x:e.clientX,y:e.clientY})
+
+// ---------------- particles décoratives ----------------
+const particles = many(300,()=>({x:rnd(0,w),y:rnd(0,h),v:rnd(.05,.3)}))
+
+// ---------------- spider ----------------
+const spider = () => {
+  let body={x:w/2,y:h/2}
+  const legs = many(8,i=>{
+    const a=i*Math.PI*2/8
+    const tx=body.x+Math.cos(a)*70
+    const ty=body.y+Math.sin(a)*70
+    const segments = many(5,j=>({x:tx,y:ty}))
+    const fibers = many(14,()=>({o:rnd(-3,3),p:rnd(0,Math.PI*2)}))
+    return {a,segments,foot:{x:tx,y:ty},fibers}
+  })
+
+  return {
+    tick(t){
+      // update particules
+      particles.forEach(p=>{
+        p.y += p.v
+        if(p.y>h)p.y=0
+      })
+
+      // déplacement continu du corps
+      body.x = lerp(body.x, mouse.x, 0.01)
+      body.y = lerp(body.y, mouse.y, 0.01)
+
+      // update legs
+      legs.forEach(l=>{
+        // position idéale autour du corps
+        const ideal = {
+          x: body.x + Math.cos(l.a)*70,
+          y: body.y + Math.sin(l.a)*70
+        }
+
+        // le pied suit la position idéale progressivement
+        l.foot.x = lerp(l.foot.x, ideal.x, 0.05)
+        l.foot.y = lerp(l.foot.y, ideal.y, 0.05)
+
+        // segments suivent le précédent
+        l.segments[0].x = lerp(l.segments[0].x, body.x, 0.1)
+        l.segments[0].y = lerp(l.segments[0].y, body.y, 0.1)
+        for(let i=1;i<l.segments.length;i++){
+          l.segments[i].x = lerp(l.segments[i].x, l.segments[i-1].x + (l.foot.x-l.segments[i-1].x)/(l.segments.length-i),0.1)
+          l.segments[i].y = lerp(l.segments[i].y, l.segments[i-1].y + (l.foot.y-l.segments[i-1].y)/(l.segments.length-i),0.1)
+        }
+      })
+
+      // draw particules
+      ctx.fillStyle="#fff"
+      particles.forEach(p=>ctx.fillRect(p.x,p.y,1,1))
+
+      // draw legs
+      legs.forEach(l=>{
+        l.fibers.forEach(f=>{
+          ctx.strokeStyle = "rgba(255,255,255,0.25)"
+          ctx.lineWidth = 1
+          const wobble = Math.sin(t*0.003+f.p)*f.o
+          ctx.beginPath()
+          ctx.moveTo(l.segments[0].x+wobble,l.segments[0].y+wobble)
+          ctx.lineTo(l.foot.x-wobble,l.foot.y-wobble)
+          ctx.stroke()
+        })
+        ctx.strokeStyle = "rgba(255,255,255,0.3)"
+        ctx.lineWidth = 1
+        for(let i=0;i<l.segments.length-1;i++){
+          ctx.beginPath()
+          ctx.moveTo(l.segments[i].x,l.segments[i].y)
+          ctx.lineTo(l.segments[i+1].x,l.segments[i+1].y)
+          ctx.stroke()
+        }
+      })
+
+      // draw body
+      ctx.fillStyle="#fff"
+      ctx.beginPath()
+      ctx.arc(body.x,body.y,3,0,Math.PI*2)
+      ctx.fill()
+
+      // draw mouse point
+      ctx.beginPath()
+      ctx.arc(mouse.x,mouse.y,2,0,Math.PI*2)
+      ctx.fill()
+    }
+  }
+}
+
+const s = spider()
+
+// animation
+requestAnimationFrame(function loop(t){
+  ctx.fillStyle="rgba(0,0,0,0.25)"
+  ctx.fillRect(0,0,w,h)
+  s.tick(t)
+  requestAnimationFrame(loop)
+})
+</script>
+</body>
+</html>
